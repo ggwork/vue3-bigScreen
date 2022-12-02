@@ -14,10 +14,37 @@ html,body {
 }
 
 @font-face {
-    font-family: 'din_condensedbold';
-    src: url('/font/din_condensed_bold.woff2') format('woff2'),
-         url('/font/din_condensed_bold.woff') format('woff'),
-         url('/font/din_condensed_bold.ttf') format('truetype');
+  font-family: 'DIN Condensed-Bold';
+  src: url('/font/DinCondensedBold/din_condensed_bold.woff2') format('woff2'),
+        url('/font/DinCondensedBold/din_condensed_bold.woff') format('woff'),
+        url('/font/DinCondensedBold/din_condensed_bold.ttf') format('truetype');
 
+}
+
+@font-face {
+  font-family: 'PingFang SC-Medium';
+  src: url('/font/PingFangSCMedium/PingFang-SC-Medium.eot');
+  src: url('/font/PingFangSCMedium/PingFang-SC-Medium.woff2') format('woff2'),
+        url('/font/PingFangSCMedium/PingFang-SC-Medium.woff') format('woff'),
+        url('/font/PingFangSCMedium/PingFang-SC-Medium.ttf') format('truetype'),
+        url('/font/PingFangSCMedium/PingFang-SC-Medium.svg') format('svg');
+
+}
+
+@font-face {
+  font-family: 'PingFang SC';
+  src: url('/font/PingFangSC/sc.eot');
+  src: url('/font/PingFangSC/sc.woff2') format('woff2'),
+        url('/font/PingFangSC/sc.woff') format('woff'),
+        url('/font/PingFangSC/sc.ttf') format('truetype'),
+        url('/font/PingFangSC/sc.svg') format('svg');
+}
+@font-face {
+  font-family: 'PingFang SC-Regular';
+  src: url('/font/PingFangSCRegular/PingFang-SC-Regular.eot');
+  src: url('/font/PingFangSCRegular/PingFang-SC-Regular.woff2') format('woff2'),
+        url('/font/PingFangSCRegular/PingFang-SC-Regular.woff') format('woff'),
+        url('/font/PingFangSCRegular/PingFang-SC-Regular.ttf') format('truetype'),
+        url('/font/PingFangSCRegular/PingFang-SC-Regular.svg') format('svg');
 }
 

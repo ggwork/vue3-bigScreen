@@ -11,7 +11,56 @@
       </div>
     </div>
     <div class="m-body">
-      <div class="b-left"></div>
+      <div class="b-left">
+        <div class="drug">
+          <div class="left-item drug-item drug-1">
+            <div class="title">
+              <div class="t-icon"></div>
+              <div class="t-txt">实时业务数据跟进</div>
+            </div>
+            <div class="content">
+              <div class="con-item">
+                <div class="con-label">预约总量(单)</div>
+                <div class="con-value">23347813</div>
+              </div>
+              <div class="con-item">
+                <div class="con-label">取药总量(单)</div>
+                <div class="con-value">23347813</div>
+              </div>
+              <div class="con-item">
+                <div class="con-label">待取总量(单)</div>
+                <div class="con-value">23347</div>
+              </div>
+            </div>
+          </div>
+          <div class="drug-item drug-2">
+            <div class="title">
+              <div class="t-icon"></div>
+              <div class="t-txt">取药规律比例</div>
+            </div>
+            <div class="content">
+              <div class="drug-regular-echarts" ref="drugRegularEchart"></div>
+            </div>
+          </div>
+        </div>
+        <div class="year">
+          <div class="title">
+            <div class="t-icon"></div>
+            <div class="t-txt">年度趋势</div>
+            <div class="t-right"></div>
+          </div>
+          <div class="content">
+            <div class="year-tread-chart" ref="yearTreadChart"></div>
+          </div>
+        </div>
+        <div class="area">
+          <!-- 辖区 -->
+        </div>
+        <div class="disease">
+          <div class="disease-1"></div>
+          <div class="disease-2"></div>
+        </div>
+      </div>
       <div class="b-center">
         <div class="echart" ref="echartEle"></div>
       </div>
@@ -25,17 +74,118 @@
 <script lang="ts" setup>
 import 'echarts-gl'
 import * as echarts from 'echarts'
-import { ref, onBeforeMount,onMounted,onUnmounted } from 'vue'
+import { ref,onMounted,onUnmounted ,getCurrentInstance } from 'vue'
 import { http } from '@/api/index'
 
+
+const internalInstance = getCurrentInstance()
+let fitChartSize = internalInstance?.appContext.config.globalProperties.$fitChartSize
+
 let echartEle = ref<any>(null)
-let myCanvas = ref<any>(null)
 
-let scaleValue = ref<number>(1)
+// 取药规律echarts
+let drugRegularEchart = ref<any>(null)
+async function initdrugRegularEchart(chartDom:any) {
+  let myChart = echarts.init(chartDom.value)
+  let option = {
+    series:[
+      {
+        name:'drugRegular',
+        type:'pie',
+        color:[
+          '#EE3831',
+          {
+            type: 'linear',
+            x: 0,
+            y: 0,
+            x2: 0,
+            y2: 1,
+            colorStops: [{
+                offset: 0, color: '#328EE4' // 0% 处的颜色
+            }, {
+                offset: 1, color: '#52B1F3' // 100% 处的颜色
+            }],
+            global: false // 缺省为 false
+          }
+        ],
+        startAngle:'0',
+        avoidLabelOverlap:false,
+        radius:['40%','70%'],
+        label: {
+          show: true,
+          position:'outside',
+          color:'#178CE8',
+          fontFamily:'DIN Condensed-Bold',
+          formatter:'{d}%\n{b}',
+          distanceToLabelLine:12,
+        },
+        labelLayout:{
+          
+          moveOverlap:'shiftY',
+          fontSize:fitChartSize(20),
+          align:'center'
+        },
+        labelLine: {
+          show: true,
+          length:10,
+          length2:10
+        },
+        
+        data:[
+          {
+            value:"20",name:'延期'
+          },
+          {
+            value:"80",name:'规律'
+          }
+        ]
+      }
+    ]
+  }
 
-let canvasSize = ref<number>(256)
+  myChart.setOption(option)
+}
+// 年度趋势
 
-async function initEchart(echartEle: any): Promise<void> {
+let yearTreadChart = ref<any>(null)
+
+async function initYearTreadChart(chartDom:any) {
+  let myChart = echarts.init(chartDom.value)
+  let gridSizeX = 30
+  let gridSizeY = 30
+  let option:any =  {
+    grid:{
+      x:gridSizeX,
+      y:gridSizeY,
+      x2:gridSizeX,
+      y2:gridSizeY,
+      left:40
+    },
+    xAxis: {
+      type: 'category',
+      data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月','8月','9月','10月','11月','12月']
+    },
+    yAxis: {
+      type: 'value',
+      show:true,
+    },
+    slient:true,
+    series: [
+      {
+        data: [135, 230, 224, 218, 135, 147, 260,150, 230, 224, 218, 135],
+        type: 'line'
+      },
+      // {
+      //   data: [50, 30, 124, 118, 35, 47, 60,50, 30, 24, 18, 35],
+      //   type: 'line'
+      // }
+    ]
+  };
+  myChart.setOption(option)
+}
+
+
+async function initMapEchart(echartEle: any): Promise<void> {
   // 基于准备好的dom，初始化echarts实例
   let myChart = echarts.init(echartEle.value)
   myChart.showLoading()
@@ -244,30 +394,11 @@ async function initEchart(echartEle: any): Promise<void> {
   }
 }
 
- const handleScreenAuto = () => {
-    const designDraftWidth = 1920;//设计稿的宽度
-    const designDraftHeight = 960;//设计稿的高度
-    //根据屏幕的变化适配的比例
-    const scale = document.documentElement.clientWidth / document.documentElement.clientHeight < designDraftWidth / designDraftHeight ?
-        (document.documentElement.clientWidth / designDraftWidth) :
-        (document.documentElement.clientHeight / designDraftHeight);
-    //缩放比例
-    (document.querySelector('#screen') as any).style.transform = `scale(${scale}) translate(-50%)`;
-}
 
 onMounted(() => {
-  // handleScreenAuto()
-  // window.onresize = () => handleScreenAuto();
-  // 初始化canvas颜色渐变
-  // if(myCanvas.value && myCanvas.value.getContext){
-  //   let context = myCanvas.value.getContext('2d')
-  //   let grad = context.createLinearGradient(0, 0, 0, canvasSize.value)
-  //   grad.addColorStop(0,'#00fcfc')
-  //   grad.addColorStop(1,'#00cfcf')
-  //   context.fillStyle=grad
-  //   context.fillRect(0,0,canvasSize.value,canvasSize.value)
-  // }
-  initEchart(echartEle)
+  initdrugRegularEchart(drugRegularEchart)
+  initYearTreadChart(yearTreadChart)
+  initMapEchart(echartEle)
 })
 onUnmounted(()=>{
   window.onresize = null
@@ -284,6 +415,7 @@ onUnmounted(()=>{
   background-image: url('../assets/images/h-bar.png');
   background-repeat: no-repeat;
   background-size: vw(1920) vh(108);
+  font-family: "DIN Condensed-Bold";
   .m-header{
     width: 100%;
     height: vh(108);
@@ -313,7 +445,7 @@ onUnmounted(()=>{
     }
     .h-right{
       font-size: vw(24);
-      font-family: "din_condensedbold";
+      font-family: "DIN Condensed-Bold";
       font-weight: bold;
       color: #A5B2CA;
       line-height: 0;
@@ -321,19 +453,128 @@ onUnmounted(()=>{
     }
   }
   .m-body{
+    margin-top:vh(16);
     .b-left {
       width: vw(550);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
+      // 多个块公用title格式
+      .title{
+        width: 100%;
+        padding-left:  vw(12);
+        padding-right:  vw(12);
+        display: flex;
+        align-items: center;
+        height: vh(44);
+        border-bottom: 1px dashed #2A596D;
+        box-sizing: border-box;
+        .t-icon{
+          width: vw(28);
+          height: vw(28);
+          background-size:100% 100%;
+        }
+        .t-txt{
+          margin-left:vw(10);
+          font-size: vw(20);
+          font-family: "PingFang SC-Medium";
+          font-weight: 500;
+          color: #BACFF8;
+        }
+        
+      }
+      .drug{
+        width: inherit;
+        height: vh(190);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        .drug-item{
+          width: vw(270);
+          height: inherit;
+          background-image:url("../assets/images/b-l-1.png");
+          background-repeat: no-repeat;
+          background-size: 100% 100%;
+          &.drug-1{
+            .t-icon{
+              background-image:url("../assets/images/b-l-time.png");
+            }
+          }
+          &.drug-2{
+            .t-icon{
+              background-image:url("../assets/images/b-l-time.png");
+            }
+          }
+          
+        }
+        .content{
+          height: vh(146);
+          padding:0 vw(20);
+          font-size: vw(14);
+          font-family: "PingFang SC-Regular", "PingFang SC";
+          font-weight: 400;
+          color: #A1BBEF;
+           display: flex;
+          // align-items: center;
+          flex-direction: column;
+          justify-content: space-evenly;
+          .con-item{
+            display: flex;
+            align-items: center;
+            .con-label{
 
+            }
+            .con-value{
+              margin-left: vw(12);
+              font-size: vw(30);
+              font-family: "DIN Condensed-Bold";
+              font-weight: bold;
+              color: #6AD2FF;
+            }
+          }
+        }
+        .drug-regular-echarts{
+          width: 100%;
+          height: vh(144);
+        }
+
+      }
+      .year{
+        width: inherit;
+        margin-top:vh(12);
+        height: vh(228);
+        background-size: 100% 100%;
+        background-image: url("../assets/images/b-l-y-bg.png"); 
+        box-sizing: border-box;
+        .title{
+          .t-icon{
+            background-image: url("../assets/images/y-t-icon.png"); 
+          }
+          .t-right{
+            width: vw(135);
+            height: vh(22);
+            background-size: 100%;
+            background-image: url("../assets/images/y-right.png"); 
+            order: 1;
+            margin-left: auto;
+          }
+        }
+        .content{
+          height: vh(184);
+          .year-tread-chart{
+            width: 100%;
+            height: vh(184);
+          }
+        }
+        
+      }
     }
   }
 
-  .echart {
-    width: 100%;
-    height: 100%;
-  }
+  // .echart {
+  //   width: 100%;
+  //   height: 100%;
+  // }
 }
 </style>
