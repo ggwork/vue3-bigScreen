@@ -39,7 +39,7 @@
               <div class="t-txt">取药规律比例</div>
             </div>
             <div class="content">
-              <div class="drug-regular-echarts" ref="drugRegularEchart"></div>
+              <div class="drug-regular-echarts" ref="drugRegularEchart" v-chart-resize></div>
             </div>
           </div>
         </div>
@@ -50,19 +50,100 @@
             <div class="t-right"></div>
           </div>
           <div class="content">
-            <div class="year-tread-chart" ref="yearTreadChart"></div>
+            <div class="year-tread-chart" ref="yearTreadChart" v-chart-resize></div>
           </div>
         </div>
         <div class="area">
           <!-- 辖区 -->
+          <div class="title">
+            <div class="t-icon"></div>
+            <div class="t-txt">辖区情况</div>
+            <div class="t-right"></div>
+          </div>
+          <div class="content">
+            <div class="area-chart" ref="areaChart" v-chart-resize></div>
+          </div>
         </div>
         <div class="disease">
-          <div class="disease-1"></div>
-          <div class="disease-2"></div>
+          <div class="disease-item disease-1">
+            <div class="title">
+              <div class="t-icon"></div>
+              <div class="t-txt">疾病排行</div>
+              <div class="t-right"></div>
+            </div>
+            <div class="content">
+              <div class="con">
+                <div class="eq eq1">1</div>
+                <div class="icon icon1"></div>
+                <div class="txt">高血压</div>
+                <div class="value">378498</div>
+              </div>
+              <div class="con">
+                <div class="eq eq2">2</div>
+                <div class="icon icon2"></div>
+                <div class="txt">糖尿病</div>
+                <div class="value">378498</div>
+              </div>
+              <div class="con">
+                <div class="eq eq3">3</div>
+                <div class="icon icon3"></div>
+                <div class="txt">糖尿病</div>
+                <div class="value">378498</div>
+              </div>
+              <div class="con">
+                <div class="eq">4</div>
+                <div class="icon icon4"></div>
+                <div class="txt">糖尿病</div>
+                <div class="value">378498</div>
+              </div>
+              <div class="con">
+                <div class="eq">5</div>
+                <div class="icon icon5"></div>
+                <div class="txt">糖尿病</div>
+                <div class="value">378498</div>
+              </div>
+              <div class="con">
+                <div class="eq">6</div>
+                <div class="icon icon6"></div>
+                <div class="txt">糖尿病</div>
+                <div class="value">378498</div>
+              </div>
+            </div>
+          </div>
+          <div class="disease-item disease-2">
+            <div class="title">
+              <div class="t-icon"></div>
+              <div class="t-txt">供应情况</div>
+              <div class="t-right"></div>
+            </div>
+            <div class="content">
+              <div class="row row1">
+                <div class="r-item">
+                  <div class="r-i-num">256</div>
+                  <div class="r-i-txt">药瓶品种(种)</div>
+                </div>
+                <div class="r-item">
+                  <div class="r-i-num">29</div>
+                  <div class="r-i-txt">覆盖病种(种)</div>
+                </div>
+              </div>
+              <div class="row row2">
+                <div class="r-item">
+                  <div class="r-i-num">0</div>
+                  <div class="r-i-txt">缺货品种(种)</div>
+                </div>
+                <div class="r-item">
+                  <div class="r-i-num">12.12</div>
+                  <div class="r-i-txt">已售品种(万盒)</div>
+                </div>
+              </div>
+            </div>
+          
+          </div>
         </div>
       </div>
       <div class="b-center">
-        <div class="echart" ref="echartEle"></div>
+        <div class="echart" ref="echartEle" v-chart-resize></div>
       </div>
       <div class="b-right"></div>
     </div>
@@ -151,8 +232,13 @@ let yearTreadChart = ref<any>(null)
 
 async function initYearTreadChart(chartDom:any) {
   let myChart = echarts.init(chartDom.value)
-  let gridSizeX = 30
-  let gridSizeY = 30
+  let gridSizeX = '5%'
+  let gridSizeY = '20%'
+  let axisStyle = {
+    color:'#BACFF8',
+    fontFamily:'PingFang SC-Regular',
+    fontSize:fitChartSize(14)
+  }
   let option:any =  {
     grid:{
       x:gridSizeX,
@@ -163,27 +249,136 @@ async function initYearTreadChart(chartDom:any) {
     },
     xAxis: {
       type: 'category',
-      data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月','8月','9月','10月','11月','12月']
+      data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月','8月','9月','10月','11月','12月'],
+      axisLabel:{
+        show:true,
+        ...axisStyle
+      },
     },
     yAxis: {
       type: 'value',
       show:true,
+      axisLabel:{
+        show:true,
+        ...axisStyle
+      },
     },
+    legend:{
+      show:true,
+      data:['预约','取药'],
+      textStyle:{
+        fontFamily:'PingFang SC-Regular',
+        fontSize:fitChartSize(14),
+        color:'#fff'
+      },
+      right:'5%'
+    },
+    
     slient:true,
     series: [
       {
+        name:'预约',
         data: [135, 230, 224, 218, 135, 147, 260,150, 230, 224, 218, 135],
         type: 'line'
       },
-      // {
-      //   data: [50, 30, 124, 118, 35, 47, 60,50, 30, 24, 18, 35],
-      //   type: 'line'
-      // }
+      {
+        name:'取药',
+        data: [50, 30, 124, 118, 35, 47, 60,50, 30, 24, 18, 35],
+        type: 'line'
+      }
     ]
   };
   myChart.setOption(option)
 }
 
+let areaChart = ref<any>(null)
+async function initAreaChart(chartDom:any) {
+  let myChart = echarts.init(chartDom.value)
+  let gridSizeX = '5%'
+  let gridSizeY = '20%'
+  let axisStyle = {
+    color:'#BACFF8',
+    fontFamily:'PingFang SC-Regular',
+    fontSize:fitChartSize(14)
+  }
+  let option:any = {
+    grid:{
+      x:gridSizeX,
+      y:gridSizeY,
+      x2:gridSizeX,
+      y2:gridSizeY,
+      left:40
+    },
+    slient:true,
+    color:[
+      {
+        type: 'linear',
+        x: 0,
+        y: 0,
+        x2: 0,
+        y2: 1,
+        colorStops: [{
+            offset: 0, color: '#FC655E' // 0% 处的颜色
+        }, {
+            offset: 1, color: '#FDA49F' // 100% 处的颜色
+        }],
+        global: false // 缺省为 false
+      },
+      {
+        type: 'linear',
+        x: 0,
+        y: 0,
+        x2: 0,
+        y2: 1,
+        colorStops: [{
+            offset: 0, color: '#136CDA' // 0% 处的颜色
+        }, {
+            offset: 1, color: '#62C7FC' // 100% 处的颜色
+        }],
+        global: false // 缺省为 false
+      }
+    ],
+    xAxis: {
+      type: 'category',
+      data: ['朝阳区', '东城区', '西城区', '平谷区', '密云区', '海淀区'],
+      axisLabel:{
+      show:true,
+        ...axisStyle
+      },
+    },
+    yAxis: {
+      type: 'value',
+      axisLabel:{
+      show:true,
+        ...axisStyle
+      },
+    },
+    legend:{
+      show:true,
+      data:['预约','取药'],
+      textStyle:{
+        fontFamily:'PingFang SC-Regular',
+        fontSize:fitChartSize(14),
+        color:'#fff'
+      },
+      right:'5%'
+    },
+    series: [
+      {
+        name:'预约',
+        data: [120, 200, 150, 80, 70, 110],
+        type: 'bar'
+      },
+      {
+        name:'取药',
+        data: [100, 210, 120, 150, 20, 100],
+        type: 'bar'
+      }
+    ]
+  };
+
+  myChart.setOption(option);
+}
 
 async function initMapEchart(echartEle: any): Promise<void> {
   // 基于准备好的dom，初始化echarts实例
@@ -398,6 +593,7 @@ async function initMapEchart(echartEle: any): Promise<void> {
 onMounted(() => {
   initdrugRegularEchart(drugRegularEchart)
   initYearTreadChart(yearTreadChart)
+  initAreaChart(areaChart)
   initMapEchart(echartEle)
 })
 onUnmounted(()=>{
@@ -568,6 +764,156 @@ onUnmounted(()=>{
           }
         }
         
+      }
+      .area{
+        width: inherit;
+        margin-top:vh(12);
+        height: vh(240);
+        background-size: 100% 100%;
+        background-image: url("../assets/images/b-l-qu.png"); 
+        box-sizing: border-box;
+        .title{
+          .t-icon{
+            background-image: url("../assets/images/b-l-qu-icon.png"); 
+          }
+          .t-right{
+            width: vw(135);
+            height: vh(22);
+            background-size: 100%;
+            background-image: url("../assets/images/y-right.png"); 
+            order: 1;
+            margin-left: auto;
+          }
+        }
+        .content{
+          height: vh(196);
+          .area-chart{
+            width: 100%;
+            height: inherit;
+          }
+        }
+       
+      }
+      .disease{
+        width: inherit;
+        margin-top:vh(12);
+        height: vh(233);
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        .disease-item{
+          width: vw(270);
+          height: vh(233);
+          background-size: 100% 100%;
+          background-repeat: no-repeat;
+        }
+        .disease-1{
+          background-size: 100% 100%;
+          background-image: url("../assets/images/b-l-disease-bg.png"); 
+          .t-icon{
+            background-image: url("../assets/images/b-l-disease-icon.png"); 
+          }
+          .content{
+            
+            width: 100%;
+            height: vh(196);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-evenly;
+            font-size: 14px;
+            font-family: "PingFang SC-Regular";
+            font-weight: 400;
+            color: #BACFF8;
+            .con{
+              height:vh(30);
+              width: 100%;
+              display: flex;
+              align-items: center;
+              padding-left:vw(14);
+              padding-right:vw(14);
+              box-sizing: border-box;
+              &:nth-of-type(even){
+                background-color:rgba(23, 140, 232, 0.1);
+              }
+              .eq{
+                color:#178CE8;
+                opacity: 0.4;
+                &.eq1,&.eq2,&.eq3{
+                  color:#FD918B;
+                }
+              }
+              .icon{
+                width: vw(16);
+                background-size: 100% 100%;
+                background-repeat: no-repeat;
+                margin-left:vw(10);
+                &.icon1{
+                  background-image: url("../assets/images/gxy.png"); 
+                }
+                &.icon2{
+                  background-image: url("../assets/images/tnb.png"); 
+                }
+                &.icon3{
+                  background-image: url("../assets/images/gxb.png"); 
+                }
+                &.icon4{
+                  background-image: url("../assets/images/fy.png"); 
+                }
+                &.icon5{
+                  background-image: url("../assets/images/nxg.png"); 
+                }
+                &.icon5{
+                  background-image: url("../assets/images/zl.png"); 
+                }
+              }
+              .txt{
+                margin-left:vw(10);
+              }
+              .value{
+                color:#178CE8;
+                opacity: 0.4;
+                margin-left: auto;
+              }
+            }
+          }
+        }
+        .disease-2{
+          background-size: 100% 100%;
+          background-image: url("../assets/images/b-l-disease-bg.png"); 
+          .t-icon{
+            background-image: url("../assets/images/b-l-disease-gongyin.png"); 
+          }
+          .content{
+            height: vh(196);
+            .row{
+              width: 100%;
+              height: 50%;
+              display: flex;
+              align-items: center;
+
+              .r-item{
+                width: 50%;
+                text-align: center; 
+                .r-i-num{
+                  font-size: vw(30);
+                  font-family: "DIN Condensed-Bold";
+                  font-weight: bold;
+                  color: #6AD2FF;
+                }
+                .r-i-txt{
+                  font-size: vw(14);
+                  font-family: "PingFang SC-Regular";
+                  font-weight: 400;
+                  color: #BACFF8;
+                  margin-top:vh(10)
+                } 
+              }
+            }
+            
+          }
+        }
       }
     }
   }
