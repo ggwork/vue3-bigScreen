@@ -143,9 +143,80 @@
         </div>
       </div>
       <div class="b-center">
+        <div class="city-list">
+          <div class="c-selected">
+            <div class="c-s-icon"></div>
+            <div class="c-s-txt">成都市</div>
+            <div class="arrow"></div>
+          </div>
+          <div class="c-options">
+            <div class="c-item">呼和浩特</div>
+            <div class="c-item">内蒙古</div>
+          </div>
+        </div>
+
         <div class="echart" ref="echartEle" v-chart-resize></div>
+        <div class="get-drug-status">
+          <div class="title">
+            <div class="t-icon"></div>
+            <div class="t-txt">取药状态</div>
+            <div class="t-right"></div>
+          </div>
+          <div class="content">
+            <div class="con-item">
+              <div>张先生</div>
+              <div>12盒</div>
+              <div>￥123.1</div>
+              <div>11-12 12:10</div>
+            </div>
+            <div class="con-item">
+              <div>张先生</div>
+              <div>12盒</div>
+              <div>￥123.1</div>
+              <div>11-12 12:10</div>
+            </div>
+            <div class="con-item">
+              <div>张先生</div>
+              <div>12盒</div>
+              <div>￥123.1</div>
+              <div>11-12 12:10</div>
+            </div>
+          
+          </div>
+        </div>
       </div>
-      <div class="b-right"></div>
+      <div class="b-right">
+        <div class="content">
+          <div class="con-item">
+            <div class="num">2`384`901</div>
+            <div class="txt txt1">规律管理(人)</div>
+          </div>
+          <div class="con-item">
+            <div class="num">2`384`901</div>
+            <div class="txt txt2">规律管理(人)</div>
+          </div>
+          <div class="con-item">
+            <div class="num">2`384`901</div>
+            <div class="txt txt3">规律管理(人)</div>
+          </div>
+          <div class="con-item">
+            <div class="num">2`384`901</div>
+            <div class="txt txt4">规律管理(人)</div>
+          </div>
+          <div class="con-item">
+            <div class="num">2`384`901</div>
+            <div class="txt txt5">规律管理(人)</div>
+          </div>
+        </div>
+      </div>
+      <div class="order">
+        <div class="title">
+          <div class="t-icon"></div>
+          <div class="t-txt">预约轮盘</div>
+          <div class="t-right"></div>
+        </div>
+        <div class="content"></div>
+      </div>
     </div>
 
     
@@ -612,6 +683,30 @@ onUnmounted(()=>{
   background-repeat: no-repeat;
   background-size: vw(1920) vh(108);
   font-family: "DIN Condensed-Bold";
+  color: #BACFF8;
+  .title{
+    width: 100%;
+    padding-left:  vw(12);
+    padding-right:  vw(12);
+    display: flex;
+    align-items: center;
+    height: vh(44);
+    border-bottom: 1px dashed #2A596D;
+    box-sizing: border-box;
+    .t-icon{
+      width: vw(28);
+      height: vw(28);
+      background-size:100% 100%;
+    }
+    .t-txt{
+      margin-left:vw(10);
+      font-size: vw(20);
+      font-family: "PingFang SC-Medium";
+      font-weight: 500;
+      color: #BACFF8;
+    }
+    
+  }
   .m-header{
     width: 100%;
     height: vh(108);
@@ -650,36 +745,21 @@ onUnmounted(()=>{
   }
   .m-body{
     margin-top:vh(16);
+    position: relative;
+    width: 100%;
+    height:87vh;
+    display: flex;
+    align-items: center;
+    // justify-content: space-between;
     .b-left {
       width: vw(550);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
+      height: inherit;
       // 多个块公用title格式
-      .title{
-        width: 100%;
-        padding-left:  vw(12);
-        padding-right:  vw(12);
-        display: flex;
-        align-items: center;
-        height: vh(44);
-        border-bottom: 1px dashed #2A596D;
-        box-sizing: border-box;
-        .t-icon{
-          width: vw(28);
-          height: vw(28);
-          background-size:100% 100%;
-        }
-        .t-txt{
-          margin-left:vw(10);
-          font-size: vw(20);
-          font-family: "PingFang SC-Medium";
-          font-weight: 500;
-          color: #BACFF8;
-        }
-        
-      }
+      
       .drug{
         width: inherit;
         height: vh(190);
@@ -689,17 +769,17 @@ onUnmounted(()=>{
         .drug-item{
           width: vw(270);
           height: inherit;
-          background-image:url("../assets/images/b-l-1.png");
+          background-image: url("../assets/images/b-l-1.png");
           background-repeat: no-repeat;
           background-size: 100% 100%;
           &.drug-1{
             .t-icon{
-              background-image:url("../assets/images/b-l-time.png");
+              background-image: url("../assets/images/b-l-time.png");
             }
           }
           &.drug-2{
             .t-icon{
-              background-image:url("../assets/images/b-l-time.png");
+              background-image: url("../assets/images/b-l-time.png");
             }
           }
           
@@ -907,7 +987,6 @@ onUnmounted(()=>{
                   font-family: "PingFang SC-Regular";
                   font-weight: 400;
                   color: #BACFF8;
-                  margin-top:vh(10)
                 } 
               }
             }
@@ -916,11 +995,200 @@ onUnmounted(()=>{
         }
       }
     }
+    .b-center{
+      width: 60vw;
+      position: relative;
+      height: inherit;
+      margin-left: vw(12);
+      background-size: 110%;
+      background-repeat: no-repeat;
+      background-image: url("../assets/images/map-bg1.png");
+      background-position: 0vw -7vh;
+      .city-list{
+        position: absolute;
+        top:0;
+        left:0;
+        width: vw(190);
+        
+        .c-selected{
+          width: inherit;
+          height:vh(44);
+          display: flex;
+          align-items: center;
+          border:1px solid rgba(113, 161, 255, 1);
+          padding-left: vw(12);
+          padding-right: vw(12);
+          box-sizing: border-box;
+          .c-s-icon{
+            width:vw(28);
+            height: vw(28);
+            background-size: 100%;
+            background-image: url("../assets/images/address.png");
+          }
+          .c-s-txt{
+            margin-left:vw(12);
+            font-size: vw(28);
+            font-family: "PingFang SC-Semibold";
+            font-weight: 600;
+            color: #BACFF8;
+          }
+          .arrow{
+            margin-left:vw(20);
+            width:vw(10);
+            height: vw(8);
+            background-image: url("../assets/images/arrow.png");
+            background-size: 100% 100%;
+          }
+        }
+        .c-options{
+          width: inherit;
+          margin-top:9px;
+          .c-item{
+            width: inherit;
+            height: vh(28);
+            text-align: center;
+            line-height: vh(28);
+            background:rgba(113, 161, 255, 0.3);
+            font-size: vw(14);
+            font-family: "PingFang SC-Regular";
+            font-weight: 400;
+            color: #BACFF8;
+            &:nth-child(even){
+              background:rgba(113, 161, 255, 0.4);
+            }
+          }
+        }
+      }
+      .get-drug-status{
+        position: absolute;
+        left:0px;
+        bottom:0px;
+        width: vw(312);
+        height: vh(150);
+        background-image: url("../assets/images/b-c-drug-bg.png");
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
+        .t-icon{
+          background-image: url("../assets/images/b-c-drug-icon.png");
+        }
+        .content{
+          width: inherit;
+          font-size: vw(14);
+          font-family: "PingFang SC-Regular";
+          font-weight: 400;
+          color:rgba(186, 207, 248, 0.5);
+          .con-item{
+            width: inherit;
+            height: vh(28);
+            padding-left: vw(10);
+            padding-right: vw(10);
+            display: flex;
+            line-height: vh(28);
+            justify-content: space-between;
+            box-sizing: border-box;
+            &:nth-of-type(even){
+              background:rgba(113, 161, 255, 0.3)
+            }
+          }
+        }
+      }
+      .echart {
+        width: 100%;
+        height: 100%;
+      }
+      
+    }
+    .b-right{
+      position: absolute;
+      height: inherit;
+      width: vw(200);
+      top:0;
+      right:0;
+      
+      .content{
+        text-align: right;
+        .con-item{
+          margin-bottom: vh(20);
+          .num{
+            font-size: vw(44);
+            font-family: "DIN Condensed-Bold";
+            font-weight: bold;
+            color: #70FDFD;
+          }
+          .txt{
+            margin-top:vh(-5);
+            font-size: vw(14);
+            font-family: "PingFang SC-Regular";
+            font-weight: 400;
+            color: #BACFF8;
+            
+            &:before{
+              content:'';
+              display: inline-block;
+              width: vw(14);
+              height: vh(14);
+              margin-right:vw(5);
+              background-repeat: no-repeat;
+              background-size: 100% 100%;
+            }
+            &.txt1{
+              &:before{
+                background-image: url("../assets/images/drug.png");
+              }
+            }
+            &.txt2{
+              &:before{
+                background-image: url("../assets/images/drug.png");
+              }
+            }
+            &.txt3{
+              &:before{
+                background-image: url("../assets/images/money.png");
+              }
+            }
+            &.txt4{
+              &:before{
+                background-image: url("../assets/images/bz.png");
+              }
+            }
+            &.txt5{
+              &:before{
+                background-image: url("../assets/images/money2.png");
+              }
+            }
+          }
+        }
+      }
+    }
+    .order{
+      width: vw(360);
+      height: vh(376);
+      position: absolute;
+      bottom:0;
+      right:0;
+      background-image: url("../assets/images/order-bg.png");
+      background-repeat: no-repeat;
+      background-size: 100% 100%;
+      .title{
+        .t-icon{
+          background-image: url("../assets/images/b-c-drug-icon.png");
+        }
+        .t-right{
+          width: vw(135);
+          height: vh(22);
+          background-size: 100%;
+          background-image: url("../assets/images/y-right.png"); 
+          order: 1;
+          margin-left: auto;
+        }
+      }
+      .content{
+        width: 100%;
+        height:vh(332)
+      }
+    }
   }
 
-  // .echart {
-  //   width: 100%;
-  //   height: 100%;
-  // }
+  
 }
 </style>
