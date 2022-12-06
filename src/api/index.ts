@@ -9,7 +9,7 @@ const defaultConfig: AxiosRequestConfig = {
   baseURL: import.meta.env.VITE_AXIOS_BASE || '',
   // 当前使用mock模拟请求，将baseURL制空，如果你的环境用到了http请求，请删除下面的baseURL启用上面的baseURL，并将第14行、19行代码注释取消
   // baseURL: "",
-  timeout: 10000,
+  timeout: 30000,
   headers: {
     Accept: "application/json, text/plain, */*",
     // "Content-Type": "application/form-data"
@@ -77,10 +77,8 @@ class PureHttp {
         // console.log("response:", response);
         const code = response.data.code;
         if (code === 200) {
-          // 删掉code，code是php接口添加的，原先的strapi接口饼没有code字段
-          const tempData = Object.assign({}, response.data);
-          delete tempData.code;
-          return tempData;
+          
+          return response.data.data;
         } else if (code === 401) {
           /** 请求白名单，放置一些不需要token的接口（通过设置请求白名单，防止token过期后再请求造成的死循环问题） */
           console.log(401)
@@ -115,7 +113,7 @@ class PureHttp {
       PureHttp.axiosInstance
         .request(config)
         .then((response) => {
-          resolve(response);
+          resolve(response as any);
         })
         .catch(error => {
           reject(error);
