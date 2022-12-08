@@ -62,7 +62,7 @@ class PureHttp {
     instance.interceptors.response.use(
       (response: PureHttpResponse) => {
         const $config = response.config;
-
+        // console.log('response:',response)
         // 关闭进度条动画
         NProgress.done();
         // 优先判断post/get等方法是否传入回掉，否则执行初始化设置等回掉
@@ -76,14 +76,14 @@ class PureHttp {
         }
         // console.log("response:", response);
         const code = response.data.code;
-        if (code === 200) {
-          
+        
+        if (code === 0) {
           return response.data.data;
         } else if (code === 401) {
           /** 请求白名单，放置一些不需要token的接口（通过设置请求白名单，防止token过期后再请求造成的死循环问题） */
           console.log(401)
         } else {
-          return response.data;
+          return response.data.data;
         }
       },
       (error: PureHttpError) => {

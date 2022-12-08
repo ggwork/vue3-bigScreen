@@ -6,12 +6,14 @@
   "scripts": {
     "dev": "vite --mode dev",
     "test": "vite --mode test",
+    "demo": "vue-tsc && vite build --mode demo",
     "build": "vue-tsc && vite build --mode prod",
     "preview": "vite preview"
   },
   "dependencies": {
     "axios": "^1.2.0",
     "countup.js": "^2.3.2",
+    "dayjs": "^1.11.7",
     "echarts": "^5.4.0",
     "echarts-gl": "^2.0.9",
     "element-resize-detector": "^1.2.4",

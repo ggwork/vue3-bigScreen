@@ -3,7 +3,7 @@
     <div v-show="loading" class="loading" ref="loadingEle">
       <img src="../assets/images/loading-21.gif" alt="loading" srcset="" />
     </div>
-    <div v-show="!loading" id="screen" class="map">
+    <div id="screen" class="map">
       <div class="m-header">
         <div class="h-left">
           <img
@@ -26,7 +26,7 @@
             srcset=""
           />
         </div>
-        <div class="h-right">2022-01-12 12:23:12</div>
+        <div class="h-right">{{ serverTime }}</div>
       </div>
       <div class="m-body">
         <div class="b-left">
@@ -39,15 +39,15 @@
               <div class="content">
                 <div class="con-item">
                   <div class="con-label">预约总量(单)</div>
-                  <div ref="orderNumEle" class="con-value">23347813</div>
+                  <div ref="orderDrugNumEle" class="con-value">{{ orderData?.totalAppointments }}</div>
                 </div>
                 <div class="con-item">
                   <div class="con-label">取药总量(单)</div>
-                  <div class="con-value">347813</div>
+                  <div ref="getDrugNumEle" class="con-value">{{ orderData.totalTakeMedicine }}</div>
                 </div>
                 <div class="con-item">
                   <div class="con-label">待取总量(单)</div>
-                  <div class="con-value">23347</div>
+                  <div ref="readyGetDrugNumEle" class="con-value">{{ orderData.totalToBeTaken }}</div>
                 </div>
               </div>
             </div>
@@ -98,41 +98,11 @@
                 <div class="t-right"></div>
               </div>
               <div class="content">
-                <div class="con">
-                  <div class="eq eq1">1</div>
+                <div class="con" v-for="(item,index) in orderData.value.diseaseRanking" :key="index">
+                  <div class="eq eq1">{{( index+1 )}}</div>
                   <div class="icon icon1"></div>
-                  <div class="txt">高血压</div>
-                  <div class="value">378498</div>
-                </div>
-                <div class="con">
-                  <div class="eq eq2">2</div>
-                  <div class="icon icon2"></div>
-                  <div class="txt">糖尿病</div>
-                  <div class="value">378498</div>
-                </div>
-                <div class="con">
-                  <div class="eq eq3">3</div>
-                  <div class="icon icon3"></div>
-                  <div class="txt">冠心病</div>
-                  <div class="value">378498</div>
-                </div>
-                <div class="con">
-                  <div class="eq">4</div>
-                  <div class="icon icon4"></div>
-                  <div class="txt">流行性感冒和肺炎</div>
-                  <div class="value">378498</div>
-                </div>
-                <div class="con">
-                  <div class="eq">5</div>
-                  <div class="icon icon5"></div>
-                  <div class="txt">脑血管疾病</div>
-                  <div class="value">378498</div>
-                </div>
-                <div class="con">
-                  <div class="eq">6</div>
-                  <div class="icon icon6"></div>
-                  <div class="txt">恶性肿瘤</div>
-                  <div class="value">378498</div>
+                  <div class="txt">{{ item.name }}</div>
+                  <div class="value">{{ item.quantity }}</div>
                 </div>
               </div>
             </div>
@@ -332,8 +302,11 @@ import {
   getCurrentInstance,
   onBeforeMount
 } from 'vue'
-import { http } from '@/api/index'
+
+import { getServerTime,getOrderStats } from '@/api/screen'
 import { CountUp } from 'countup.js'
+import dayjs from 'dayjs'
+
 
 let loading = ref<boolean>(true)
 
@@ -397,11 +370,11 @@ async function initdrugRegularEchart(chartDom: any) {
 
         data: [
           {
-            value: '20',
+            value: (orderData.value.totalToBeTaken / orderData.value.totalTakeMedicine * 100).toFixed(0),
             name: '延期'
           },
           {
-            value: '80',
+            value: (orderData.value.regularMedication / orderData.value.totalTakeMedicine * 100).toFixed(0),
             name: '规律'
           }
         ]
@@ -416,6 +389,16 @@ async function initdrugRegularEchart(chartDom: any) {
 let yearTreadChart = ref<any>(null)
 
 async function initYearTreadChart(chartDom: any) {
+
+  let monthData:string[] = []
+  let totalData:number[] = []
+  let completedData:number[] = []
+  orderData.value.annualTrends.forEach((item:any)=>{
+    monthData.push(item.month+'月')
+    totalData.push(item.total)
+    completedData.push(item.completed)
+  })
+
   let myChart = echarts.init(chartDom.value)
   let gridSizeX = '5%'
   let gridSizeY = '20%'
@@ -490,6 +473,16 @@ async function initYearTreadChart(chartDom: any) {
 
 let areaChart = ref<any>(null)
 async function initAreaChart(chartDom: any) {
+  // 辖区data
+  let areaData:string[] = []
+  let totalData:number[] = []
+  let completedData:number[] = []
+  orderData.value.jurisdiction.forEach((item:any)=>{
+    areaData.push(item.area)
+    totalData.push(item.total)
+    completedData.push(item.completed)
+  })
+  
   let myChart = echarts.init(chartDom.value)
   let gridSizeX = '5%'
   let gridSizeY = '20%'
@@ -547,7 +540,7 @@ async function initAreaChart(chartDom: any) {
     ],
     xAxis: {
       type: 'category',
-      data: ['朝阳区', '东城区', '西城区', '平谷区', '密云区', '海淀区'],
+      data: areaData,
       axisLabel: {
         show: true,
         ...axisStyle
@@ -573,12 +566,12 @@ async function initAreaChart(chartDom: any) {
     series: [
       {
         name: '预约',
-        data: [120, 200, 150, 80, 70, 110],
+        data: totalData,
         type: 'bar'
       },
       {
         name: '取药',
-        data: [100, 210, 120, 150, 20, 100],
+        data: completedData,
         type: 'bar'
       }
     ]
@@ -593,10 +586,14 @@ async function initMapEchart(echartEle: any): Promise<void> {
   myChart.showLoading()
 
   // 获取json数据
-  const wh_jsonData: any = await http.request(
-    'get',
-    'https://geo.datav.aliyun.com/areas_v3/bound/340200_full.json'
-  )
+  const wh_jsonData: any = await fetch('https://geo.datav.aliyun.com/areas_v3/bound/340200_full.json').then(res=>{
+    return res.json()
+  })
+    
+
+
+
+  
 
   echarts.registerMap('areaMap', wh_jsonData as any)
 
@@ -610,18 +607,7 @@ async function initMapEchart(echartEle: any): Promise<void> {
   })
 
   let options = {
-    // graphic: {
-    //   type: 'image',
-    //   id: 'bgImage',
-    //   z: -10,
-    //   left: 'center',
-    //   top:'center',
-    //   style: {
-    //     image: 'https://www.boxuegu.com/assets/user/background1.png', // 这里一定要注意、注意，必须是https开头的图片路径地址
-    //     width: 90,
-    //     height: 80,
-    //   }
-    // },
+   
     series: [
       {
         type: 'map3D',
@@ -681,47 +667,6 @@ async function initMapEchart(echartEle: any): Promise<void> {
           intensity: 0.5
         }
       }
-      // {
-      //   type: 'map3D',
-      //   show: false,
-      //   silent: true,
-      //   map: 'areaMap',
-      //   left:1,
-      //   top:1,
-
-      //   regionHeight: 5,
-      //   shading: 'realistic',
-      //   realisticMaterial: {
-      //     detailTexture: myCanvas.value.toDataURL(),
-      //     roughness: 0.2,
-      //     textureOffset: 0
-      //   },
-      //   viewControl: {
-      //     autoRotate: false,
-      //     distance: 110,
-      //     alpha:80,
-      //     zoomSensitivity: 0,
-      //     panSensitivity: 0
-      //   },
-      //   itemStyle: {
-      //     color: '#6AD2FF',
-      //     borderWidth: '2',
-      //     borderColor: '#00fcfc'
-      //   },
-
-      //   light: {
-      //     main: {
-      //       color: '#fff',
-      //       shadow: true,
-      //       alpha: 30,
-      //       beta: 40
-      //     }
-      //   },
-      //   ambient: {
-      //     color: '#fff',
-      //     intensity: 0.5
-      //   }
-      // },
     ]
   }
 
@@ -733,30 +678,89 @@ async function initMapEchart(echartEle: any): Promise<void> {
     myChart.resize()
   }
 }
-// 定义变量
-let orderNumEle = ref()
-function numberAnimate() {
-  const countUp = new CountUp(orderNumEle.value, 23347813)
+
+
+
+
+// 以下为动画函数
+let orderDrugNumEle = ref<HTMLElement>()
+function numberAnimate(refEle: HTMLElement,num:number) {
+  console.log('refEle:',refEle)
+  const countUp = new CountUp(refEle, num)
   if (!countUp.error) {
     countUp.start()
   } else {
     console.error(countUp.error)
   }
+  return countUp
 }
 
-onBeforeMount(() => {
+
+
+// 默认使用芜湖数据
+let cityId = ref<number>(340200)
+let serverTime= ref<string>()
+let orderData = ref<any>({})
+
+
+async function getOrderDataFn(){
+  // 获取订单数据
+  orderData.value = await getOrderStats(cityId.value)
+}
+
+
+onBeforeMount(async () => {
+
+  console.log('onBeforeMount')
+  // 以下是接口请函数
+  // 开始本地计时,避免重复请求接口
+  let timeHandler:any = null
+  function startCountTime(timeStamp:number){
+    
+    timeHandler = setTimeout(()=>{
+      timeStamp+= 1000
+      serverTime.value = dayjs(timeStamp).format('YYYY-MM-DD HH:mm:ss')
+      startCountTime(timeStamp)
+    },1000)
+    
+  }
+
   // 获取系统时间
+  async function getServerTimeFn() {
+    let res = await getServerTime()
+    serverTime.value = res.dateTime
+    let timeStamp = (new Date(res.dateTime)).getTime()
+    if(timeHandler){
+      clearTimeout(timeHandler)
+    }
+    startCountTime(timeStamp)
+  }
+  getServerTimeFn()
+  // 每一天从服务器请求下，更新下时间
+  setInterval(getServerTimeFn,86400)
+
 })
 onMounted(() => {
-  initdrugRegularEchart(drugRegularEchart)
-  initYearTreadChart(yearTreadChart)
-  initAreaChart(areaChart)
-  initMapEchart(echartEle)
+  // console.log('orderData.value:',orderData.value)
   
-  loading.value = false
-  setTimeout(() => {
-    numberAnimate()
-  }, 2000)
+  Promise.all([getOrderDataFn()]).then(()=>{
+    setTimeout(()=>{
+      initdrugRegularEchart(drugRegularEchart)
+      initYearTreadChart(yearTreadChart)
+      initAreaChart(areaChart)
+      initMapEchart(echartEle)
+      setTimeout(()=>{
+        loading.value = false
+      },1000)
+      
+      setTimeout(() => {
+        numberAnimate(orderDrugNumEle.value as HTMLElement,23478)
+      }, 2000)
+    },0)
+  })
+  
+  
+  
 
 })
 onUnmounted(() => {
@@ -795,6 +799,8 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: #041229;
+  z-index: 1000;
 }
 
 .map {
@@ -941,6 +947,10 @@ onUnmounted(() => {
         .drug-regular-echarts {
           width: 100%;
           height: vh(144);
+          canvas{
+            width: 100%;
+            height: 100%;
+          }
         }
       }
       .year {
@@ -1077,11 +1087,16 @@ onUnmounted(() => {
               }
               .txt {
                 margin-left: vw(10);
+                word-break: keep-all;
+                overflow: hidden;
+                width: 6vw;
+                text-overflow: ellipsis;
               }
               .value {
                 color: #178ce8;
                 opacity: 0.4;
                 margin-left: auto;
+                
               }
             }
           }
