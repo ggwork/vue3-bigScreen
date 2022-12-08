@@ -733,6 +733,21 @@ async function getUserStatsFn() {
   userStats.value = tempData
 }
 
+let appointments:any = ref({})
+
+async function getAppointmentsFn() {
+  let data = await getAppointments(cityId.value)
+  appointments.value = data
+}
+
+let mapOrders:any = ref({})
+
+async function getMapOrdersFn() {
+  let data = await getMapOrders(cityId.value)
+  mapOrders.value = data
+}
+
+
 
 onBeforeMount(async () => {
 
@@ -768,7 +783,7 @@ onBeforeMount(async () => {
 onMounted(() => {
   // console.log('orderData.value:',orderData.value)
   
-  Promise.all([getOrderDataFn(),getDrugTakingStatusFn(),getUserStatsFn()]).then(()=>{
+  Promise.all([getOrderDataFn(),getDrugTakingStatusFn(),getUserStatsFn(),getAppointmentsFn(),getMapOrdersFn()]).then(()=>{
     setTimeout(()=>{
       initdrugRegularEchart(drugRegularEchart)
       initYearTreadChart(yearTreadChart)
