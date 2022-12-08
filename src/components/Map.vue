@@ -98,7 +98,7 @@
                 <div class="t-right"></div>
               </div>
               <div class="content">
-                <div class="con" v-for="(item,index) in orderData.value.diseaseRanking" :key="index">
+                <div class="con" v-for="(item,index) in orderData.diseaseRanking" :key="index">
                   <div class="eq eq1">{{( index+1 )}}</div>
                   <div class="icon icon1"></div>
                   <div class="txt">{{ item.name }}</div>
@@ -306,6 +306,7 @@ import {
 import { getServerTime,getOrderStats } from '@/api/screen'
 import { CountUp } from 'countup.js'
 import dayjs from 'dayjs'
+import wuhuJson from '@/assets/js/wuhu.json'
 
 
 let loading = ref<boolean>(true)
@@ -586,10 +587,10 @@ async function initMapEchart(echartEle: any): Promise<void> {
   myChart.showLoading()
 
   // 获取json数据
-  const wh_jsonData: any = await fetch('https://geo.datav.aliyun.com/areas_v3/bound/340200_full.json').then(res=>{
-    return res.json()
-  })
-    
+  // const wh_jsonData: any = await fetch('https://geo.datav.aliyun.com/areas_v3/bound/340200_full.json').then(res=>{
+  //   return res.json()
+  // })
+  const wh_jsonData = wuhuJson
 
 
 
