@@ -120,16 +120,6 @@ class PureHttp {
         });
     });
   }
-
-  /** 单独抽离的post工具函数 */
-  public post<T, P>(url: string, params?: T, config?: PureHttpRequestConfig): Promise<P> {
-    return this.request<P>("post", url, params, config);
-  }
-
-  /** 单独抽离的get工具函数 */
-  public get<T, P>(url: string, params?: T, config?: PureHttpRequestConfig): Promise<P> {
-    return this.request<P>("get", url, params, config);
-  }
 }
 
 export const http = new PureHttp();

@@ -98,7 +98,7 @@
                 <div class="t-right"></div>
               </div>
               <div class="content">
-                <div class="con" v-for="(item,index) in orderData.diseaseRanking" :key="index">
+                <div class="con" v-for="(item,index) in orderData.diseaseRanking?.slice(0,6)" :key="index">
                   <div class="eq eq1">{{( index+1 )}}</div>
                   <div class="icon icon1"></div>
                   <div class="txt">{{ item.name }}</div>
@@ -115,21 +115,21 @@
               <div class="content">
                 <div class="row row1">
                   <div class="r-item">
-                    <div class="r-i-num">256</div>
+                    <div class="r-i-num">{{ orderData.availability?.drugVariety}}</div>
                     <div class="r-i-txt">药瓶品种(种)</div>
                   </div>
                   <div class="r-item">
-                    <div class="r-i-num">29</div>
+                    <div class="r-i-num">{{ orderData.availability?.coverDiseaseSpecies}}</div>
                     <div class="r-i-txt">覆盖病种(种)</div>
                   </div>
                 </div>
                 <div class="row row2">
                   <div class="r-item">
-                    <div class="r-i-num">0</div>
+                    <div class="r-i-num">{{ orderData.availability?.outOfStockVarieties}}</div>
                     <div class="r-i-txt">缺货品种(种)</div>
                   </div>
                   <div class="r-item">
-                    <div class="r-i-num">12.12</div>
+                    <div class="r-i-num">{{ orderData.availability?.drugsSold}}</div>
                     <div class="r-i-txt">已售品种(万盒)</div>
                   </div>
                 </div>
@@ -159,11 +159,11 @@
               <div class="t-right"></div>
             </div>
             <div class="content">
-              <div class="con-item">
-                <div>张先生</div>
-                <div>12盒</div>
-                <div>￥123单.1</div>
-                <div>11-12 12:10</div>
+              <div class="con-item" v-for="(item,index) in orderData.orders" :key="index">
+                <div>{{(item.name)}}</div>
+                <div>{{item.quantity}}盒</div>
+                <div>￥{{item.amount}}单</div>
+                <div>{{item.datetime}}</div>
               </div>
               <div class="con-item">
                 <div>张先生</div>
@@ -183,23 +183,23 @@
         <div class="b-right">
           <div class="content">
             <div class="con-item">
-              <div class="num">2`384`901</div>
+              <div class="num">{{userStats.regularPeopleNum}}</div>
               <div class="txt txt1">规律管理(人)</div>
             </div>
             <div class="con-item">
-              <div class="num">2`384`901</div>
+              <div class="num">{{userStats.performanceTimes}}</div>
               <div class="txt txt2">履约取药(次)</div>
             </div>
             <div class="con-item">
-              <div class="num">2`384`901</div>
+              <div class="num">{{userStats.totalTransactionAmount}}</div>
               <div class="txt txt3">交易金额(元)</div>
             </div>
             <div class="con-item">
-              <div class="num">2`384`901</div>
+              <div class="num">{{userStats.medicalSecurity}}</div>
               <div class="txt txt4">大病保障(人)</div>
             </div>
             <div class="con-item">
-              <div class="num">2`384`901</div>
+              <div class="num">{{userStats.totalGuaranteeAmount}}</div>
               <div class="txt txt5">保障总额(元)</div>
             </div>
           </div>
@@ -303,7 +303,7 @@ import {
   onBeforeMount
 } from 'vue'
 
-import { getServerTime,getOrderStats } from '@/api/screen'
+import { getServerTime,getOrderStats,getDrugTakingStatus,getUserStats,getAppointments,getMapOrders } from '@/api/screen'
 import { CountUp } from 'countup.js'
 import dayjs from 'dayjs'
 import wuhuJson from '@/assets/js/wuhu.json'
@@ -698,6 +698,9 @@ function numberAnimate(refEle: HTMLElement,num:number) {
 
 
 
+
+
+
 // 默认使用芜湖数据
 let cityId = ref<number>(340200)
 let serverTime= ref<string>()
@@ -707,6 +710,27 @@ let orderData = ref<any>({})
 async function getOrderDataFn(){
   // 获取订单数据
   orderData.value = await getOrderStats(cityId.value)
+}
+
+let drugTakingStatus = ref({orders:[]})
+// 取药状态
+async function getDrugTakingStatusFn() {
+  drugTakingStatus.value = await getDrugTakingStatus(cityId.value)
+}
+let userStats:any = ref({})
+// 正则表达式
+const toThousands = (num = 0) => {
+   return num.toString().replace(/\d+/, function(n) {
+      return n.replace(/(\d)(?=(?:\d{3})+$)/g, '$1`');
+   });
+};
+async function getUserStatsFn() {
+  let data = await getUserStats(cityId.value)
+  let tempData:any = {}
+  Object.keys(data).forEach(key=>{
+    tempData[key] = toThousands(data[key])
+  })
+  userStats.value = tempData
 }
 
 
@@ -744,7 +768,7 @@ onBeforeMount(async () => {
 onMounted(() => {
   // console.log('orderData.value:',orderData.value)
   
-  Promise.all([getOrderDataFn()]).then(()=>{
+  Promise.all([getOrderDataFn(),getDrugTakingStatusFn(),getUserStatsFn()]).then(()=>{
     setTimeout(()=>{
       initdrugRegularEchart(drugRegularEchart)
       initYearTreadChart(yearTreadChart)
